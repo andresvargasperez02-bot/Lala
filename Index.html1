@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klick mich!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            overflow: hidden;
+            transition: background 0.5s;
+        }
+
+        .click-me {
+            color: white;
+            font-size: 2.5rem;
+            text-align: center;
+            animation: pulse 2s infinite;
+            user-select: none;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #jumpscare {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 9999;
+            display: none;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            object-fit: cover;
+        }
+
+        .shake {
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="click-me">⚠️ Klicke mich! ⚠️</div>
+
+    <div id="jumpscare">
+        <iframe 
+            id="scareVideo" 
+            src="" 
+            title="YouTube video player" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <script>
+        // ✅ Dein YouTube Video ID (aus dem Link https://youtu.be/E9nqJFjUPQA)
+        const videoId = 'E9nqJFjUPQA';
+        const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&mute=1&rel=0&showinfo=0&enablejsapi=1`;
+        
+        const jumpscareDiv = document.getElementById('jumpscare');
+        const iframe = document.getElementById('scareVideo');
+        const body = document.querySelector('body');
+
+        // Kurzer Schreck-Sound
+        const scareSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-scare-movie-scream-427.mp3');
+        scareSound.volume = 0.8;
+
+        // Klick-Event
+        body.addEventListener('click', () => {
+            // Hintergrund wechseln
+            body.style.background = 'black';
+            
+            // Text ausblenden
+            document.querySelector('.click-me').style.display = 'none';
+            
+            // Jumpscare anzeigen & schütteln
+            jumpscareDiv.style.display = 'block';
+            body.classList.add('shake');
+
+            // YouTube-Video laden & autoplay (muss erst nach Klick gesetzt werden!)
+            iframe.src = videoUrl;
+
+            // Sound abspielen
+            scareSound.play().catch(e => console.warn("Audio blocked:", e));
+
+            // Reset nach 4 Sekunden
+            setTimeout(() => {
+                resetPage();
+            }, 4000);
+        });
+
+        function resetPage() {
+            jumpscareDiv.style.display = 'none';
+            iframe.src = ''; // Stoppt YouTube-Video
+            body.classList.remove('shake');
+            body.style.background = 'linear-gradient(135deg, #2b5876 0%, #4e4376 100%)';
+            
+            document.querySelector('.click-me').style.display = 'block';
+            document.querySelector('.click-me').textContent = "Haha! Nervenstark? 😈";
+        }
+    </script>
+</body>
+</html>
